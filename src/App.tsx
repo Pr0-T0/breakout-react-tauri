@@ -139,7 +139,6 @@ function App() {
     };
 
     const draw = () => {
-      // Move paddle
       if (keys.current.left || buttonsRef.current.left) paddleXRef.current -= paddleSpeed;
       if (keys.current.right || buttonsRef.current.right) paddleXRef.current += paddleSpeed;
       paddleXRef.current = Math.max(
@@ -147,13 +146,11 @@ function App() {
         Math.min(canvasWidth - paddleWidth, paddleXRef.current)
       );
 
-      // Move ball only if game started
       if (gameStarted.current) {
         ballX += ballDX;
         ballY += ballDY;
       }
 
-      // Wall collisions
       if (ballX + ballRadius > canvasWidth || ballX - ballRadius < 0) {
         ballDX = -ballDX;
       }
@@ -161,7 +158,6 @@ function App() {
         ballDY = -ballDY;
       }
 
-      // Paddle collision
       if (
         ballY + ballRadius >= paddleY &&
         ballX >= paddleXRef.current &&
@@ -171,19 +167,16 @@ function App() {
         ballY = paddleY - ballRadius;
       }
 
-      // Brick collision
       detectBrickCollision();
 
-      // Game over
       if (ballY + ballRadius > canvasHeight) {
         alert('Game Over');
         resetGame();
       }
 
-      // Draw everything
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, canvas.width, canvasHeight);
+      ctx.fillRect(0, 0, canvas.width, canvas.height); // solid black background
 
       drawBricks();
 
@@ -201,15 +194,22 @@ function App() {
 
     draw();
     return () => cancelAnimationFrame(animationFrameId);
-  }, []); // ✅ no buttons dependency
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 space-y-4">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen space-y-4"
+      style={{ backgroundColor: '#111' }} // fallback background
+    >
       <canvas
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
-        className="border border-white rounded-2xl"
+        style={{
+          backgroundColor: '#000',
+          border: '2px solid white',
+          borderRadius: '16px',
+        }}
       />
       <div className="flex gap-4">
         <button
